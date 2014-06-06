@@ -3,6 +3,4 @@
 require "bundler/setup"
 require_relative "../lib/neo_barons"
 
-# p Gosu.screen_width
-# p Gosu.screen_height
-NeoBarons::Window.new.show
+NeoBarons::UI.show

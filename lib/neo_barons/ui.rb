@@ -8,26 +8,17 @@ module NeoBarons
     end
 
     def initialize
-      @sizes = build_sizes
+      @sprites = build_sprite_manager
+      @sizes   = build_sizes
 
       super(sizes.current_width, sizes.current_height, false)
       self.caption = "Neo Barons"
 
-      @hub_image = Gosu::Image.new(
-        self,
-        File.join(File.dirname(__FILE__), *%w[.. .. data sprites hub.png])
-      )
-      @pixel_image = Gosu::Image.new(
-        self,
-        File.join(File.dirname(__FILE__), *%w[.. .. data sprites pixel.png]),
-        true
-      )
-
       reset_highlight
     end
 
-    attr_reader :sizes
-    private     :sizes
+    attr_reader :sprites, :sizes
+    private     :sprites, :sizes
 
     def update
       reset_highlight
@@ -77,7 +68,7 @@ module NeoBarons
             highlight_y_plus_height = highlight_y                         +
                                       ( angle == 90 ? sizes.drawn_tile
                                                     : sizes.angled_rail ) -
-                                      @hub_image.width
+                                      sprites[:hub].width
             highlight_area = Polygon.new( [
               [highlight_x,            highlight_y],
               [highlight_x_plus_width, highlight_y],
@@ -112,7 +103,7 @@ module NeoBarons
                 angle = 30 + 60 * connection
                 color = @highlighted_rail == [x, y, connection] ? 0xFFFF2600
                                                                 : 0xFFFFFFFF
-                @pixel_image.draw_rot(
+                sprites[:pixel].draw_rot(
                   rail_x,
                   rail_y,
                   0,
@@ -126,7 +117,7 @@ module NeoBarons
               end
 
               color = @highlighted_hub == [x, y] ? 0xFFFFFC79 : 0xFFCA7200
-              @hub_image.draw(
+              sprites[:hub].draw(
                 x * sizes.drawn_tile + sizes.hub_x,
                 y * sizes.drawn_tile + sizes.hub_y,
                 1,
@@ -152,6 +143,16 @@ module NeoBarons
     end
 
     private
+
+    def build_sprite_manager
+      Hash.new { |all, key|
+        all[key] = Gosu::Image.new(
+          self,
+          File.join(File.dirname(__FILE__), *%W[.. .. data sprites #{key}.png]),
+          key == :pixel
+        )
+      }
+    end
 
     def build_sizes
       sizes = DependentValues.new
@@ -182,11 +183,11 @@ module NeoBarons
         Math.sqrt(sizes.drawn_tile ** 2 + sizes.half_tile ** 2).round
       }
 
-      sizes.hub_x             { (sizes.drawn_tile - @hub_image.width)  / 2 }
-      sizes.hub_y             { (sizes.drawn_tile - @hub_image.height) / 2 }
-      sizes.hub_x_plus_width  { sizes.hub_x + @hub_image.width  }
-      sizes.hub_y_plus_height { sizes.hub_y + @hub_image.height }
-      sizes.half_hub_height   { @hub_image.height / 2}
+      sizes.hub_x             { (sizes.drawn_tile - sprites[:hub].width)  / 2 }
+      sizes.hub_y             { (sizes.drawn_tile - sprites[:hub].height) / 2 }
+      sizes.hub_x_plus_width  { sizes.hub_x + sprites[:hub].width  }
+      sizes.hub_y_plus_height { sizes.hub_y + sprites[:hub].height }
+      sizes.half_hub_height   { sprites[:hub].height / 2}
 
       sizes.last_row { sizes.drawn_rows - 1 }
 

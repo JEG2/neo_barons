@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby -w
 
 require "bundler/setup"
+
 require_relative "../lib/neo_barons"
 
-NeoBarons::UI.show
+NeoBarons.play

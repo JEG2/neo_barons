@@ -4,4 +4,8 @@ source "https://rubygems.org"
 
 gem "gosu"
 
-gem "rspec", group: :test
+group :test do
+  gem "rspec"
+  gem "rspec-autotest"
+  gem "ZenTest"
+end

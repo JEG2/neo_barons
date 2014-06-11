@@ -3,11 +3,9 @@ require_relative "dependent_values"
 
 module NeoBarons
   class UI < Gosu::Window
-    def self.show
-      new.show
-    end
+    def initialize(map)
+      @map = map
 
-    def initialize
       @sprites = build_sprite_manager
       @sizes   = build_sizes
 
@@ -17,8 +15,8 @@ module NeoBarons
       reset_highlight
     end
 
-    attr_reader :sprites, :sizes
-    private     :sprites, :sizes
+    attr_reader :map, :sprites, :sizes
+    private     :map, :sprites, :sizes
 
     def update
       reset_highlight
@@ -117,7 +115,13 @@ module NeoBarons
               end
 
               color = @highlighted_hub == [x, y] ? 0xFFFFFC79 : 0xFFCA7200
-              sprites[:hub].draw(
+              sprite =
+                if map[y][x].is_a?(City)
+                  map[y][x].small? ? :small_city : :city
+                else
+                  :hub
+                end
+              sprites[sprite].draw(
                 x * sizes.drawn_tile + sizes.hub_x,
                 y * sizes.drawn_tile + sizes.hub_y,
                 1,
@@ -161,8 +165,8 @@ module NeoBarons
       sizes.drawn_height     = 1800
       sizes.drawn_tile       = 120
       sizes.drawn_rail_width = 2
-      sizes.drawn_columns    = 15    # FIXME:  move into Game
-      sizes.drawn_rows       = 15    # FIXME:  move into Game
+      sizes.drawn_columns    = map.first.size
+      sizes.drawn_rows       = map.size
 
       sizes.highlightable_rail_width = 20
 

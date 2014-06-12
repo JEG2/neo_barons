@@ -30,4 +30,10 @@ describe NeoBarons::MapGenerator do
     map = NeoBarons::MapGenerator.new(cities: 1.0, small_cities: 1.0).generate
     expect(map.flatten.all?(&:small?)).to be_truthy
   end
+
+  it "generates unique names for all cities" do
+    map    = NeoBarons::MapGenerator.new(cities: 1.0).generate
+    cities = map.flatten
+    expect(cities.map(&:name).uniq.size).to eq(cities.size)
+  end
 end

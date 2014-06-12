@@ -6,8 +6,9 @@ module NeoBarons
     def initialize(map)
       @map = map
 
-      @sprites = build_sprite_manager
-      @sizes   = build_sizes
+      @sprites     = build_sprite_manager
+      @name_images = build_name_image_manager
+      @sizes       = build_sizes
 
       super(sizes.current_width, sizes.current_height, false)
       self.caption = "Neo Barons"
@@ -15,8 +16,8 @@ module NeoBarons
       reset_highlight
     end
 
-    attr_reader :map, :sprites, :sizes
-    private     :map, :sprites, :sizes
+    attr_reader :map, :sprites, :name_images, :sizes
+    private     :map, :sprites, :name_images, :sizes
 
     def update
       reset_highlight
@@ -114,10 +115,11 @@ module NeoBarons
                 )
               end
 
-              color = @highlighted_hub == [x, y] ? 0xFFFFFC79 : 0xFFCA7200
+              color  = @highlighted_hub == [x, y] ? 0xFFFFFC79 : 0xFFCA7200
+              cell   = map[y][x]
               sprite =
-                if map[y][x].is_a?(City)
-                  map[y][x].small? ? :small_city : :city
+                if cell.is_a?(City)
+                  cell.small? ? :small_city : :city
                 else
                   :hub
                 end
@@ -129,6 +131,13 @@ module NeoBarons
                 1,
                 color
               )
+              if cell.name
+                name_images[cell.name].draw(
+                  x * sizes.drawn_tile + sizes.hub_x_plus_width + 2,
+                  y * sizes.drawn_tile + sizes.hub_y,
+                  1
+                )
+              end
             end
           end
         end
@@ -149,11 +158,22 @@ module NeoBarons
     private
 
     def build_sprite_manager
-      Hash.new { |all, key|
-        all[key] = Gosu::Image.new(
+      Hash.new { |sprites, key|
+        sprites[key] = Gosu::Image.new(
           self,
-          File.join(File.dirname(__FILE__), *%W[.. .. data sprites #{key}.png]),
+          File.join(__dir__, *%W[.. .. data sprites #{key}.png]),
           key == :pixel
+        )
+      }
+    end
+
+    def build_name_image_manager
+      Hash.new { |images, name|
+        images[name] = Gosu::Image.from_text(
+          self,
+          name,
+          Gosu.default_font_name,
+          20
         )
       }
     end
@@ -189,8 +209,9 @@ module NeoBarons
 
       sizes.hub_x             { (sizes.drawn_tile - sprites[:hub].width)  / 2 }
       sizes.hub_y             { (sizes.drawn_tile - sprites[:hub].height) / 2 }
-      sizes.hub_x_plus_width  { sizes.hub_x + sprites[:hub].width  }
-      sizes.hub_y_plus_height { sizes.hub_y + sprites[:hub].height }
+      sizes.hub_x_plus_width  { sizes.hub_x + sprites[:hub].width     }
+      sizes.hub_x_plus_name   { sizes.hub_x + sprites[:hub].width + 2 }
+      sizes.hub_y_plus_height { sizes.hub_y + sprites[:hub].height    }
       sizes.half_hub_height   { sprites[:hub].height / 2}
 
       sizes.last_row { sizes.drawn_rows - 1 }

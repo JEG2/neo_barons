@@ -7,3 +7,5 @@ As these colonies struggle take hold on strange new worlds, shipping supplies is
 ## Resolution
 
 All sprites will target a 2880x1800 (MacBook Pro 15" Retina Display) resolution.  The plan is to run full screen (pending a fix in Gosu) and scale down as needed.
+
+https://github.com/DamirSvrtan/space-invaders.rb

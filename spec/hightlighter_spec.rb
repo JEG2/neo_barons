@@ -54,114 +54,114 @@ describe NeoBarons::Highlighter do
   let(:mouse_middle_x)   { tile * column + half_tile + half_tile + half_cargo }
   let(:mouse_middle_y)   { tile * row + half_tile + half_offset }
 
-  it "highlights hubs when the mouse is inside of it" do
-    highlighter.locate_mouse(mouse_middle_x, mouse_middle_y)
-    expect(highlighter.highlight_hub?(column, row)).to be_truthy
-  end
+  # it "highlights hubs when the mouse is inside of it" do
+  #   highlighter.locate_mouse(mouse_middle_x, mouse_middle_y)
+  #   expect(highlighter.highlight_hub?(column, row)).to be_truthy
+  # end
 
-  context "with a point on a connection" do
-    let(:half_hub) { 20 * sizes.scaled_width }
-    let(:x_offset) { half_hub.ceil + 1 }
-    let(:y_offset) { x_offset * Math.sqrt(3) }  # 30 60 90 triangle
+  # context "with a point on a connection" do
+  #   let(:half_hub) { 20 * sizes.scaled_width }
+  #   let(:x_offset) { half_hub.ceil + 1 }
+  #   let(:y_offset) { x_offset * Math.sqrt(3) }  # 30 60 90 triangle
 
-    it "highlights upper left connections in the same tile" do
-      highlighter.locate_mouse( mouse_middle_x - x_offset,
-                                mouse_middle_y - y_offset )
-      expect(highlighter.highlight_connection?(column, row, 2)).to be_truthy
-    end
+  #   it "highlights upper left connections in the same tile" do
+  #     highlighter.locate_mouse( mouse_middle_x - x_offset,
+  #                               mouse_middle_y - y_offset )
+  #     expect(highlighter.highlight_connection?(column, row, 2)).to be_truthy
+  #   end
 
-    it "highlights left connections in the same tile" do
-      highlighter.locate_mouse(mouse_middle_x - x_offset, mouse_middle_y)
-      expect(highlighter.highlight_connection?(column, row, 1)).to be_truthy
-    end
+  #   it "highlights left connections in the same tile" do
+  #     highlighter.locate_mouse(mouse_middle_x - x_offset, mouse_middle_y)
+  #     expect(highlighter.highlight_connection?(column, row, 1)).to be_truthy
+  #   end
 
-    it "highlights lower left connections in the same tile" do
-      highlighter.locate_mouse( mouse_middle_x - x_offset,
-                                mouse_middle_y + y_offset )
-      expect(highlighter.highlight_connection?(column, row, 0)).to be_truthy
-    end
+  #   it "highlights lower left connections in the same tile" do
+  #     highlighter.locate_mouse( mouse_middle_x - x_offset,
+  #                               mouse_middle_y + y_offset )
+  #     expect(highlighter.highlight_connection?(column, row, 0)).to be_truthy
+  #   end
 
-    it "highlights upper right connections as lower left in up right tile" do
-      highlighter.locate_mouse( mouse_middle_x + x_offset,
-                                mouse_middle_y - y_offset )
-      expect(
-        highlighter.highlight_connection?(column + 1, row - 1, 0)
-      ).to be_truthy
-    end
+  #   it "highlights upper right connections as lower left in up right tile" do
+  #     highlighter.locate_mouse( mouse_middle_x + x_offset,
+  #                               mouse_middle_y - y_offset )
+  #     expect(
+  #       highlighter.highlight_connection?(column + 1, row - 1, 0)
+  #     ).to be_truthy
+  #   end
 
-    it "highlights right connections as left in right tile" do
-      highlighter.locate_mouse(mouse_middle_x + x_offset, mouse_middle_y)
-      expect(highlighter.highlight_connection?(column + 1, row, 1)).to be_truthy
-    end
+  #   it "highlights right connections as left in right tile" do
+  #     highlighter.locate_mouse(mouse_middle_x + x_offset, mouse_middle_y)
+  #     expect(highlighter.highlight_connection?(column + 1, row, 1)).to be_truthy
+  #   end
 
-    it "highlights lower right connections as upper left in down right tile" do
-      highlighter.locate_mouse( mouse_middle_x + x_offset,
-                                mouse_middle_y + y_offset )
-      expect(
-        highlighter.highlight_connection?(column + 1, row + 1, 2)
-      ).to be_truthy
-    end
-  end
+  #   it "highlights lower right connections as upper left in down right tile" do
+  #     highlighter.locate_mouse( mouse_middle_x + x_offset,
+  #                               mouse_middle_y + y_offset )
+  #     expect(
+  #       highlighter.highlight_connection?(column + 1, row + 1, 2)
+  #     ).to be_truthy
+  #   end
+  # end
 
-  context "cargos" do
-    let(:city) { double(drawn_cargos: %w[apples bacon carrots]) }
-    let(:map)  {
-      ([[hub] * 15] * 15).tap do |hubs|
-        hubs[row] = ([hub] * 15).tap do |row_of_hubs|
-          row_of_hubs[column] = city
-        end
-      end
-    }
+  # context "cargos" do
+  #   let(:city) { double(drawn_cargos: %w[apples bacon carrots]) }
+  #   let(:map)  {
+  #     ([[hub] * 15] * 15).tap do |hubs|
+  #       hubs[row] = ([hub] * 15).tap do |row_of_hubs|
+  #         row_of_hubs[column] = city
+  #       end
+  #     end
+  #   }
 
-    context "in this tile" do
-      it "are highlighted at the top left" do
-        highlighter.locate_mouse( mouse_middle_x - half_tile + 1,
-                                  mouse_middle_y - half_tile + 1 )
-        expect(highlighter.highlight_cargo?(column, row, 0)).to be_truthy
-      end
+  #   context "in this tile" do
+  #     it "are highlighted at the top left" do
+  #       highlighter.locate_mouse( mouse_middle_x - half_tile + 1,
+  #                                 mouse_middle_y - half_tile + 1 )
+  #       expect(highlighter.highlight_cargo?(column, row, 0)).to be_truthy
+  #     end
 
-      it "are highlighted at the top middle" do
-        highlighter.locate_mouse(mouse_middle_x, mouse_middle_y - half_tile + 1)
-        expect(highlighter.highlight_cargo?(column, row, 1)).to be_truthy
-      end
+  #     it "are highlighted at the top middle" do
+  #       highlighter.locate_mouse(mouse_middle_x, mouse_middle_y - half_tile + 1)
+  #       expect(highlighter.highlight_cargo?(column, row, 1)).to be_truthy
+  #     end
 
-      it "are highlighted at the top right" do
-        highlighter.locate_mouse( mouse_middle_x + half_tile - 1,
-                                  mouse_middle_y - half_tile + 1 )
-        expect(highlighter.highlight_cargo?(column, row, 2)).to be_truthy
-      end
+  #     it "are highlighted at the top right" do
+  #       highlighter.locate_mouse( mouse_middle_x + half_tile - 1,
+  #                                 mouse_middle_y - half_tile + 1 )
+  #       expect(highlighter.highlight_cargo?(column, row, 2)).to be_truthy
+  #     end
 
-      it "are not highlighted if they don't exist" do
-        city.drawn_cargos[1] = nil
-        highlighter.locate_mouse(mouse_middle_x, mouse_middle_y - half_tile + 1)
-        expect(highlighter.highlight_cargo?(column, row, 1)).to be_falsey
-      end
-    end
+  #     it "are not highlighted if they don't exist" do
+  #       city.drawn_cargos[1] = nil
+  #       highlighter.locate_mouse(mouse_middle_x, mouse_middle_y - half_tile + 1)
+  #       expect(highlighter.highlight_cargo?(column, row, 1)).to be_falsey
+  #     end
+  #   end
 
-    context "in the tile below" do
-      it "are highlighted at the top left" do
-        highlighter.locate_mouse(
-          mouse_middle_x - half_tile + 1,
-          mouse_middle_y - half_tile + cargo_y + cargo_tweak + half_cargo_tweak
-        )
-        expect(highlighter.highlight_cargo?(column, row, 0)).to be_truthy
-      end
+  #   context "in the tile below" do
+  #     it "are highlighted at the top left" do
+  #       highlighter.locate_mouse(
+  #         mouse_middle_x - half_tile + 1,
+  #         mouse_middle_y - half_tile + cargo_y + cargo_tweak + half_cargo_tweak
+  #       )
+  #       expect(highlighter.highlight_cargo?(column, row, 0)).to be_truthy
+  #     end
 
-      it "are highlighted at the top middle" do
-        highlighter.locate_mouse(
-          mouse_middle_x,
-          mouse_middle_y - half_tile + (cargo_y + half_cargo_tweak)
-        )
-        expect(highlighter.highlight_cargo?(column, row, 1)).to be_truthy
-      end
+  #     it "are highlighted at the top middle" do
+  #       highlighter.locate_mouse(
+  #         mouse_middle_x,
+  #         mouse_middle_y - half_tile + (cargo_y + half_cargo_tweak)
+  #       )
+  #       expect(highlighter.highlight_cargo?(column, row, 1)).to be_truthy
+  #     end
 
-      it "are highlighted at the top right" do
-        highlighter.locate_mouse(
-          mouse_middle_x + half_tile - 1,
-          mouse_middle_y - half_tile + cargo_y + cargo_tweak + half_cargo_tweak
-        )
-        expect(highlighter.highlight_cargo?(column, row, 2)).to be_truthy
-      end
-    end
-  end
+  #     it "are highlighted at the top right" do
+  #       highlighter.locate_mouse(
+  #         mouse_middle_x + half_tile - 1,
+  #         mouse_middle_y - half_tile + cargo_y + cargo_tweak + half_cargo_tweak
+  #       )
+  #       expect(highlighter.highlight_cargo?(column, row, 2)).to be_truthy
+  #     end
+  #   end
+  # end
 end
